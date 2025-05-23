@@ -1,0 +1,38 @@
+<nav class="bg-blue-700 p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <a href="{% url 'home' %}" class="text-white text-2xl font-bold rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Task Manager</a>
+        <div class="space-x-4 flex items-center">
+            {% if user.is_authenticated %}
+                {# Notification Bell Icon #}
+                <div class="relative">
+                    <a href="{% url 'notification_list' %}" class="text-white px-3 py-2 rounded-md hover:bg-blue-600 transition duration-300 relative">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17H8l-1.67-1.67A5 5 0 013 10V7a3 3 0 013-3h12a3 3 0 013 3v3a5 5 0 01-1.67 3.33L16 17z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h.01"></path>
+                        </svg>
+                        {% if unread_notifications_count > 0 %}
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                                {{ unread_notifications_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </div>
+
+                <a href="{% url 'dashboard' %}" class="text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Dashboard</a>
+                <a href="{% url 'task_list' %}" class="text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">My Tasks</a>
+                <a href="{% url 'category_list' %}" class="text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Manage Categories</a>
+                <a href="{% url 'profile' %}" class="text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Profile</a>
+                <span class="text-white text-lg">Welcome, {{ user.username }}!</span>
+                <form action="{% url 'logout' %}" method="post" class="inline-block">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300">
+                        Log Out
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">Log In</a>
+                <a href="{% url 'signup' %}" class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition duration-300">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock title %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-120px)]"> {# Adjust min-height to account for nav/footer #}
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Log In</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-300">
+                Log In
+            </button>
+        </form>
+        <p class="text-center text-gray-600 mt-4">
+            Don't have an account? <a href="{% url 'signup' %}" class="text-blue-600 hover:underline">Sign Up</a>
+        </p>
+        <p class="text-center text-gray-600 mt-2">
+            <a href="{% url 'password_reset' %}" class="text-blue-600 hover:underline">Forgot password?</a>
+        </p>
+    </div>
+</div>
+{% endblock content %}

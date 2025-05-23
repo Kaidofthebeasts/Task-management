@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Hello, {{ username }}!</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {# Total Tasks Card #}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-center">
+            <h2 class="text-xl font-semibold text-gray-700">Total Tasks</h2>
+            <p class="text-5xl font-bold text-blue-600 mt-2">{{ total_tasks }}</p>
+        </div>
+        {# Completed Tasks Card #}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-center">
+            <h2 class="text-xl font-semibold text-gray-700">Completed Tasks</h2>
+            <p class="text-5xl font-bold text-green-600 mt-2">{{ completed_tasks }}</p>
+        </div>
+        {# Pending Tasks Card #}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-center">
+            <h2 class="text-xl font-semibold text-gray-700">Pending Tasks</h2>
+            <p class="text-5xl font-bold text-yellow-600 mt-2">{{ pending_tasks }}</p>
+        </div>
+    </div>
+
+    {# Reminder Section #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {# Overdue Tasks #}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <h2 class="text-2xl font-semibold text-red-600 mb-4 flex items-center">
+                <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Overdue Tasks ({{ overdue_tasks_count }})
+            </h2>
+            {% if overdue_tasks_list %}
+                <ul class="divide-y divide-gray-200">
+                    {% for task in overdue_tasks_list %}
+                        <li class="py-3 flex items-center justify-between">
+                            <div>
+                                <a href="{% url 'task_detail' task.pk %}" class="text-lg font-medium text-gray-800 hover:text-blue-600 transition duration-300">{{ task.title }}</a>
+                                <p class="text-sm text-gray-500">Due: {{ task.due_date|date:"M d, Y H:i" }}</p>
+                                {% if task.category %}
+                                    <span class="text-xs text-gray-400">Category: {{ task.category.name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <form action="{% url 'dashboard' %}" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="task_id" value="{{ task.pk }}">
+                                    <input type="hidden" name="action" value="mark_complete">
+                                    <button type="submit" title="Mark as Complete" class="text-green-500 hover:text-green-700">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </button>
+                                </form>
+                                <a href="{% url 'task_update' task.pk %}" title="Edit Task" class="text-yellow-500 hover:text-yellow-700">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No overdue tasks!</p>
+            {% endif %}
+        </div>
+
+        {# Tasks Due Soon #}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <h2 class="text-2xl font-semibold text-orange-600 mb-4 flex items-center">
+                <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h.01M12 15h.01M15 15h.01M9 19h.01M7 11h.01m10-4H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2z"></path></svg>
+                Tasks Due Soon ({{ tasks_due_soon_count }})
+            </h2>
+            {% if tasks_due_soon_list %}
+                <ul class="divide-y divide-gray-200">
+                    {% for task in tasks_due_soon_list %}
+                        <li class="py-3 flex items-center justify-between">
+                            <div>
+                                <a href="{% url 'task_detail' task.pk %}" class="text-lg font-medium text-gray-800 hover:text-blue-600 transition duration-300">{{ task.title }}</a>
+                                <p class="text-sm text-gray-500">Due: {{ task.due_date|date:"M d, Y H:i" }}</p>
+                                {% if task.category %}
+                                    <span class="text-xs text-gray-400">Category: {{ task.category.name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <form action="{% url 'dashboard' %}" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="task_id" value="{{ task.pk }}">
+                                    <input type="hidden" name="action" value="mark_complete">
+                                    <button type="submit" title="Mark as Complete" class="text-green-500 hover:text-green-700">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </button>
+                                </form>
+                                <a href="{% url 'task_update' task.pk %}" title="Edit Task" class="text-yellow-500 hover:text-yellow-700">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No tasks due soon!</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {# Tasks by Category Chart (if you add charting library later, for now just list) #}
+    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Tasks by Category</h2>
+        {% if tasks_by_category %}
+            <ul class="divide-y divide-gray-200">
+                {% for category in tasks_by_category %}
+                    <li class="py-2 flex justify-between items-center">
+                        <span class="text-lg text-gray-700">{{ category.category_name }}</span>
+                        <span class="text-md font-bold text-blue-500">{{ category.count }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No categories with tasks yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock content %}

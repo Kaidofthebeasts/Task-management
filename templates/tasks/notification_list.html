@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}My Notifications{% endblock title %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">My Notifications</h1>
+
+    {% if notifications %}
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+            <ul class="divide-y divide-gray-200">
+                {% for notification in notifications %}
+                    <li class="py-4 flex items-center justify-between {% if not notification.is_read %}bg-blue-50{% endif %} rounded-md px-4">
+                        <div>
+                            <p class="text-lg font-medium text-gray-800">
+                                {% if notification.task %}
+                                    <a href="{% url 'task_detail' notification.task.pk %}" class="text-blue-600 hover:underline">
+                                        {{ notification.message }}
+                                    </a>
+                                {% else %}
+                                    {{ notification.message }}
+                                {% endif %}
+                            </p>
+                            <p class="text-sm text-gray-500 mt-1">
+                                <span class="font-semibold">Type:</span> {{ notification.get_notification_type_display }}
+                                <span class="ml-4 font-semibold">Received:</span> {{ notification.created_at|date:"M d, Y P" }}
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            {% if not notification.is_read %}
+                                <span class="px-3 py-1 text-xs font-semibold leading-none text-blue-800 bg-blue-200 rounded-full">New</span>
+                            {% else %}
+                                <span class="px-3 py-1 text-xs font-semibold leading-none text-gray-600 bg-gray-200 rounded-full">Read</span>
+                            {% endif %}
+                            {# No explicit "Mark as Read" button needed here as viewing marks them read #}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {# Pagination Controls #}
+        {% if is_paginated %}
+        <div class="flex justify-center mt-8 space-x-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-300">Previous</a>
+            {% endif %}
+
+            <span class="px-4 py-2 text-gray-800 bg-gray-100 rounded-md">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-300">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div class="text-center py-12 bg-white rounded-lg shadow-md">
+            <p class="text-lg text-gray-600 mb-4">You have no notifications!</p>
+            <a href="{% url 'task_list' %}" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300 shadow-lg">
+                View My Tasks
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,29 @@
+# .gitignore
+
+# Python
+*.pyc
+__pycache__/
+.Python/
+env/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Django
+db.sqlite3
+/media/ # Or specify subdirectories if you want some media to be tracked
+/staticfiles/ # Collected static files should not be tracked by Git
+*.log
+local_settings.py # If you used this pattern for local settings
+.history/ # VS Code history
+
+# Environment variables
+.env  # <--- Add this line to ignore your environment variables file
+
+# IDE specific files
+.idea/ # PyCharm
+.vscode/ # VS Code
+
+# Operating System Files
+.DS_Store # macOS
+Thumbs.db # Windows
